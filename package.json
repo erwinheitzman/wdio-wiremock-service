@@ -1,0 +1,32 @@
+{
+  "name": "wdio-wiremock-service",
+  "version": "1.00",
+  "description": "A WebdriverIO service to start &amp; stop WireMock Standalone",
+  "author": "Erwin Heitzman <erwin.heitzman@gmail.com>",
+  "homepage": "https://github.com/erwinheitzman/wdio-wiremock-service#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erwinheitzman/wdio-wiremock-service.git"
+  },
+  "keywords": [
+    "webdriver",
+    "webdriverio",
+    "wdio",
+    "wdio-service",
+    "wiremock",
+    "standalone",
+    "server",
+    "mock",
+    "proxy",
+    "stub",
+    "tests"
+  ],
+  "bugs": {
+    "url": "https://github.com/erwinheitzman/wdio-wiremock-service/issues"
+  }
+}
