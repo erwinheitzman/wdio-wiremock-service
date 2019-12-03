@@ -1,5 +1,6 @@
 const { get } = require('https');
 const { createWriteStream } = require('fs');
+const { join } = require('path');
 // const version = require('./package.json').version;
 const version = '2.25.1-1';
 
@@ -56,13 +57,13 @@ exports.default = class WiremockLauncher {
 
     console.log(`Downloading WireMock standalone from Maven Central...\n  ${url}`);
 
-    installFile(url, './wiremock-standalone.jar', (error) => {
+    installFile(url, join(__dirname, 'wiremock-standalone.jar'), (error) => {
       if (error) {
         throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}`);
       }
     
       const { spawn } = require('child_process');
-      const compilerPath = require.resolve('./wiremock-standalone.jar');
+      const compilerPath = require.resolve(join(__dirname, './wiremock-standalone.jar'));
   
       this.watchMode = !!config.watch;
   
