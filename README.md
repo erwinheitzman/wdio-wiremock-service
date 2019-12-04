@@ -45,6 +45,25 @@ export.config = {
 
 The following options can be added to the service.
 
+### port
+Port where WireMock should run on.
+
+Type: `Number`
+
+Default: `8080`
+
+Example:
+```js
+// wdio.conf.js
+export.config = {
+  // ...
+  services: [
+    ['wiremock', { port: 8181 }]
+  ],
+  // ...
+};
+```
+
 ### rootDir
 Path where WireMock will look for files.
 
