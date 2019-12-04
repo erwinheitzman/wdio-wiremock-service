@@ -1,8 +1,7 @@
 const { get } = require('https');
 const { createWriteStream } = require('fs');
 const { join } = require('path');
-// const version = require('./package.json').version;
-const version = '2.25.1-1';
+const version = require('./package.json').version;
 
 function getDownloadStream(downloadUrl, cb) {
   var r = get(downloadUrl).on('response', (res) => {
