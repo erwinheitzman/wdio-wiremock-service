@@ -34,19 +34,10 @@ function installFile(from, to, cb) {
 
 exports.default = class WiremockLauncher {
   constructor(options = {}) {
-    if (!options.rootDir) {
-      options.rootDir = ['--root-dir', './mock'];
-    }
-
-    if (!options.stdio) {
-      options.stdio = 'inherit';
-    }
-
-    if (!options.mavenBaseUrl) {
-      options.mavenBaseUrl = 'https://repo1.maven.org/maven2';
-    }
-
     this.options = options;
+    this.options.rootDir = ['--root-dir', options.rootDir || './mock'];
+    this.options.stdio = options.stdio || 'inherit';
+    this.options.mavenBaseUrl = options.mavenBaseUrl || 'https://repo1.maven.org/maven2';
   }
 
   onPrepare(config, capabilities) {
@@ -69,7 +60,7 @@ exports.default = class WiremockLauncher {
       this.process = spawn(
         'java',
         [ '-jar', compilerPath, ...this.options.rootDir ],
-        { stdio: 'inherit', detached: true }
+        { stdio: this.options.stdio, detached: true }
       );
   
       this.process.on('error', (error) => {
