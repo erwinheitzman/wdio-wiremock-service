@@ -15,12 +15,12 @@ The easiest way is to keep `wdio-wiremock-service` as a devDependency in your `p
 ```json
 {
   "devDependencies": {
-    "wdio-wiremock-service": "^5.0.0"
+    "wdio-wiremock-service": "^2.25.1-1"
   }
 }
 ```
 
-You can simple do it by:
+You can simply do it by:
 
 ```bash
 npm install wdio-wiremock-service --save-dev
@@ -30,13 +30,13 @@ Instructions on how to install `WebdriverIO` can be found [here.](https://webdri
 
 ## Configuration
 
-In order to use the service you need to add `wdio-wiremock-service` to your service array:
+In order to use the service you need to add it to your service array:
 
 ```js
 // wdio.conf.js
 export.config = {
   // ...
-  services: ['wdio-wiremock-service'],
+  services: ['wiremock'],
   // ...
 };
 ```
@@ -58,7 +58,7 @@ Example:
 export.config = {
   // ...
   services: [
-    ['wdio-wiremock-service', { rootDir: './mock' }]
+    ['wiremock', { rootDir: './mock' }]
   ],
   // ...
 };
@@ -78,7 +78,7 @@ Example:
 export.config = {
   // ...
   services: [
-    ['wdio-wiremock-service', { stdio: 'inherit' }]
+    ['wiremock', { stdio: 'inherit' }]
   ],
   // ...
 };
@@ -97,7 +97,7 @@ Example:
 export.config = {
   // ...
   services: [
-    ['wdio-wiremock-service', { mavenBaseUrl: 'https://repo1.maven.org/maven2' }]
+    ['wiremock', { mavenBaseUrl: 'https://repo1.maven.org/maven2' }]
   ],
   // ...
 };
