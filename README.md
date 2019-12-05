@@ -1,26 +1,14 @@
-# wdio-wiremock-service
-A WebdriverIO service to start &amp; stop WireMock
 
-WebdriverIO WireMock Service
-=======================================
+# WebdriverIO WireMock Service
 
- This service helps you to run WireMock seamlessly when running tests with [WebdriverIO](https://webdriver.io). It uses the well know [maven](https://mvnrepository.com/repos/central) repository to download the WireMock jar for you which is then automatically installed and started.
+[![npm version](https://badge.fury.io/js/wdio-wiremock-service.svg)](https://badge.fury.io/js/wdio-wiremock-service)
+[![Downloads](https://img.shields.io/npm/dm/wdio-wiremock-service.svg)](https://www.npmjs.com/package/typescript)
+
+[![Join the chat at https://gitter.im/erwinheitzman/wdio-wiremock-service](https://badges.gitter.im/erwinheitzman/wdio-wiremock-service.svg)](https://gitter.im/erwinheitzman/wdio-wiremock-service?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+This service helps you to run WireMock seamlessly when running tests with [WebdriverIO](https://webdriver.io). It uses the well know [Maven](https://mvnrepository.com/repos/central) repository to download the WireMock jar for you which is then automatically installed, started and stopped. Stay up to date by joining the community over at [Gitter](https://gitter.im/erwinheitzman/wdio-wiremock-service) to join others and for support.
 
 ## Installation
-
-Before starting make sure you have JDK installed.
-
-The easiest way is to keep `wdio-wiremock-service` as a devDependency in your `package.json`.
-
-```json
-{
-  "devDependencies": {
-    "wdio-wiremock-service": "^2.25.1-1"
-  }
-}
-```
-
-You can simply do it by:
 
 ```bash
 npm install wdio-wiremock-service --save-dev
