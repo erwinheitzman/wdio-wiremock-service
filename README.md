@@ -1,4 +1,7 @@
 # wdio-wiremock-service
+
+[![Join the chat at https://gitter.im/wdio-wiremock-service/community](https://badges.gitter.im/wdio-wiremock-service/community.svg)](https://gitter.im/wdio-wiremock-service/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A WebdriverIO service to start &amp; stop WireMock
 
 WebdriverIO WireMock Service
