@@ -29,6 +29,54 @@ export.config = {
 };
 ```
 
+## Usage
+
+In the root directory (default `./mock`) you find two subdirectories, `__files` and `mappings`.
+
+### Fixtures
+
+WireMock allows you to use fixture files alongside your mocks. These files can be placed in the `__files` directory. These files can then be used by your mocks.
+
+An example of a fixture file:
+
+```json
+Hello world
+```
+
+### Mocks
+
+Your mock files are to be placed in the `mappings` directory.
+
+An example of a mock file:
+
+```json
+{
+  "request": {
+      "method": "GET",
+      "url": "/api/mytest"
+  },
+  "response": {
+      "status": 200,
+      "bodyFileName": "hello-world.json"
+  }
+}
+```
+
+An example without the use of fixtures:
+
+```json
+{
+  "request": {
+      "method": "GET",
+      "url": "/api/mytest"
+  },
+  "response": {
+      "status": 200,
+      "body": "Hello world"
+  }
+}
+```
+
 ## Options
 
 The following options can be added to the service.
