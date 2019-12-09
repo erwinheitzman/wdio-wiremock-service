@@ -6,7 +6,7 @@
 
 [![Join the chat at https://gitter.im/erwinheitzman/wdio-wiremock-service](https://badges.gitter.im/erwinheitzman/wdio-wiremock-service.svg)](https://gitter.im/erwinheitzman/wdio-wiremock-service?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This service helps you to run WireMock seamlessly when running tests with [WebdriverIO](https://webdriver.io). It uses the well know [Maven](https://mvnrepository.com/repos/central) repository to download the WireMock jar for you which is then automatically installed, started and stopped. Stay up to date by joining the community over at [Gitter](https://gitter.im/erwinheitzman/wdio-wiremock-service) to join others and for support.
+This service helps you to run [WireMock](http://wiremock.org/) seamlessly when running tests with [WebdriverIO](https://webdriver.io). It uses the well know [Maven](https://mvnrepository.com/repos/central) repository to download the WireMock jar for you which is then automatically installed, started and stopped. Stay up to date by joining the community over at [Gitter](https://gitter.im/erwinheitzman/wdio-wiremock-service) for help and support.
 
 ## Installation
 
@@ -31,13 +31,13 @@ export.config = {
 
 ## Usage
 
-In the root directory (default `./mock`) you find two subdirectories, `__files` and `mappings`.
+In the root directory (default `./mock`) you find two subdirectories, `__files` and `mappings` which are used for your fixtures and mocks.
 
 ### Fixtures
 
-WireMock allows you to use fixture files alongside your mocks. These files can be placed in the `__files` directory. These files can then be used by your mocks.
+WireMock allows you to use fixture files alongside your mocks, place these in the `__files` directory.
 
-An example of a fixture file:
+Example of a fixture:
 
 ```json
 Hello world
@@ -45,9 +45,24 @@ Hello world
 
 ### Mocks
 
-Your mock files are to be placed in the `mappings` directory.
+In order for WireMock to find your mocks, place them in the `mappings` directory.
 
-An example of a mock file:
+Example of a mock:
+
+```json
+{
+  "request": {
+      "method": "GET",
+      "url": "/api/mytest"
+  },
+  "response": {
+      "status": 200,
+      "body": "Hello world"
+  }
+}
+```
+
+Example of a mock with a fixture:
 
 ```json
 {
@@ -62,19 +77,27 @@ An example of a mock file:
 }
 ```
 
-An example without the use of fixtures:
+### Writing tests
 
-```json
-{
-  "request": {
-      "method": "GET",
-      "url": "/api/mytest"
-  },
-  "response": {
-      "status": 200,
-      "body": "Hello world"
-  }
-}
+Writing your first test is really straight forward:
+
+<sub><sup>`./test/specs/mytest.js`</sup></sub>
+```js
+const fetch = require('node-fetch');
+const assert = require('assert');
+
+describe('My test', () => {
+  it('should assert the mock data', () => {
+    browser.call(async () => {
+      await fetch('http://localhost:8080/api/mytest')
+        .then((res) => res.text())
+        .then((body) => {
+            // assert that the request body returns the expected value
+            assert.equal(body, 'More content');
+        });
+    });
+  });
+});
 ```
 
 ## Options
