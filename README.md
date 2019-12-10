@@ -1,8 +1,8 @@
 
 # WebdriverIO WireMock Service
 
-[![npm version](https://badge.fury.io/js/wdio-wiremock-service.svg)](https://badge.fury.io/js/wdio-wiremock-service)
-[![Downloads](https://img.shields.io/npm/dm/wdio-wiremock-service.svg)](https://img.shields.io/npm/dm/wdio-wiremock-service)
+[![npm version](https://badge.fury.io/js/wdio-wiremock-service.svg)](https://www.npmjs.com/package/wdio-wiremock-service)
+[![downloads](https://img.shields.io/npm/dm/wdio-wiremock-service.svg)](https://www.npmjs.com/package/wdio-wiremock-service)
 
 [![Join the chat at https://gitter.im/erwinheitzman/wdio-wiremock-service](https://badges.gitter.im/erwinheitzman/wdio-wiremock-service.svg)](https://gitter.im/erwinheitzman/wdio-wiremock-service?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
