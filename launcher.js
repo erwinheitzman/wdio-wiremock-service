@@ -6,7 +6,8 @@ const { waitUntilUsed } = require('tcp-port-used');
 const { version } = require('./package.json');
 
 const wmVersion = version.split('-').shift();
-const compilerPath = resolve(join(__dirname, `wiremock-standalone-${wmVersion}.jar`));
+const binPath = join(__dirname, `wiremock-standalone-${wmVersion}.jar`);
+const compilerPath = resolve(binPath);
 
 exports.httpRequest = function httpRequest(url) {
   return new Promise((resolve, reject) => {
@@ -65,11 +66,9 @@ exports.default = class WiremockLauncher {
   async onPrepare(config, capabilities) {
     this.watchMode = !!config.watch;
 
-    const binPath = join(__dirname, `wiremock-standalone${wmVersion}.jar`);
-
     if (!existsSync(binPath) && !this.skipWiremockInstall) {
       console.log(`Downloading WireMock standalone from Maven Central...\n  ${this.url}`);
-      const error = await installFile(this.url, join(__dirname, `wiremock-standalone-${wmVersion}.jar`));
+      const error = await installFile(this.url, binPath);
       if (error) {
         throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}`);
       }
