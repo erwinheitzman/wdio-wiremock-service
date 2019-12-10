@@ -9,7 +9,7 @@ const wmVersion = version.split('-').shift();
 const binPath = join(__dirname, `wiremock-standalone-${wmVersion}.jar`);
 const compilerPath = resolve(binPath);
 
-exports.httpRequest = function httpRequest(url) {
+function httpRequest(url) {
   return new Promise((resolve, reject) => {
       const req = get(url, (res) => {
           if (res.statusCode !== 200) {
