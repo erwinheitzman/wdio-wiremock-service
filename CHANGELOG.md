@@ -1,3 +1,7 @@
+## 2.25.1-4
+
+- Fixed bug where a reference was incorrect
+
 ## 2.25.1-3
 
 - Added args support
