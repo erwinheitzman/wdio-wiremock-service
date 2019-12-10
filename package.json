@@ -28,5 +28,9 @@
   ],
   "bugs": {
     "url": "https://github.com/erwinheitzman/wdio-wiremock-service/issues"
-  }
+  },
+  "dependencies": {
+    "tcp-port-used": "^1.0.1"
+  },
+  "devDependencies": {}
 }
