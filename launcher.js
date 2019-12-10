@@ -1,10 +1,14 @@
+const { createWriteStream, existsSync } = require('fs');
 const { get } = require('https');
-const { createWriteStream } = require('fs');
-const { join } = require('path');
+const { join, resolve } = require('path');
+const { spawn } = require('child_process');
 const { waitUntilUsed } = require('tcp-port-used');
-const version = require('./package.json').version;
+const { version } = require('./package.json');
 
-function httpRequest(url) {
+const wmVersion = version.split('-').shift();
+const compilerPath = resolve(join(__dirname, `wiremock-standalone-${wmVersion}.jar`));
+
+exports.httpRequest = function httpRequest(url) {
   return new Promise((resolve, reject) => {
       const req = get(url, (res) => {
           if (res.statusCode !== 200) {
@@ -25,8 +29,7 @@ function httpRequest(url) {
 async function installFile(from, to) {
   return httpRequest(from).then(res => {
     return new Promise((resolve, reject) => {
-      const stream = createWriteStream(to);
-      res.pipe(stream)
+      res.pipe(createWriteStream(to))
       res.on('end', () => resolve());
       res.on('error', () => reject(new Error('Could not write to ' + to)));
     });
@@ -34,40 +37,46 @@ async function installFile(from, to) {
 }
 
 exports.default = class WiremockLauncher {
-  constructor(options = {}) {
-    this.options = options;
-    this.options.port = options.port || 8080;
-    this.options.rootDir = options.rootDir || './mock';
-    this.options.stdio = options.stdio || 'inherit';
-    this.options.mavenBaseUrl = options.mavenBaseUrl || 'https://repo1.maven.org/maven2';
+  constructor({
+    port = 8080,
+    rootDir = './mock',
+    stdio = 'inherit',
+    mavenBaseUrl = 'https://repo1.maven.org/maven2',
+    skipWiremockInstall = false,
+    args = []
+  }) {
+    this.args = [];
+    this.args = this.args.concat(['-jar', compilerPath]);
+    this.args = this.args.concat(['-port', port]);
+    this.args = this.args.concat(['-root-dir', rootDir]);
+    this.args = this.args.concat(args);
+
+    this.spawnOptions = { stdio, detached: true };
+    this.url = `${
+      mavenBaseUrl
+    }/com/github/tomakehurst/wiremock-standalone/${
+      wmVersion
+    }/wiremock-standalone-${
+      wmVersion
+    }.jar`;
+    this.skipWiremockInstall = !!skipWiremockInstall;
   }
 
   async onPrepare(config, capabilities) {
-    const wiremockVersion = version.split('-').shift();
-    const url = this.options.mavenBaseUrl + '/com/github/tomakehurst/wiremock-standalone/'
-      + `${wiremockVersion}/wiremock-standalone-${wiremockVersion}.jar`;
-
-    console.log(`Downloading WireMock standalone from Maven Central...\n  ${url}`);
-
-    const error = await installFile(url, join(__dirname, 'wiremock-standalone.jar'));
-    if (error) {
-      throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}`);
-    }
-  
-    const { spawn } = require('child_process');
-    const compilerPath = require.resolve(join(__dirname, './wiremock-standalone.jar'));
-
     this.watchMode = !!config.watch;
 
-    const portArgs = ['--port', this.options.port];
-    const rootDirArgs = ['--root-dir', this.options.rootDir];
+    const binPath = join(__dirname, `wiremock-standalone${wmVersion}.jar`);
 
-    this.process = spawn(
-      'java',
-      [ '-jar', compilerPath, ...rootDirArgs, ...portArgs ],
-      { stdio: this.options.stdio, detached: true }
-    );
-    
+    if (!existsSync(binPath) && !this.skipWiremockInstall) {
+      console.log(`Downloading WireMock standalone from Maven Central...\n  ${this.url}`);
+      const error = await installFile(this.url, join(__dirname, `wiremock-standalone-${wmVersion}.jar`));
+      if (error) {
+        throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}`);
+      }
+    }
+
+    this.process = spawn('java', this.args, this.spawnOptions);
+
     this.process.on('error', (error) => {
       console.error(error);
     });
@@ -82,7 +91,7 @@ exports.default = class WiremockLauncher {
       process.on('uncaughtException', this._stopProcess);
     }
 
-    await waitUntilUsed(this.options.port, 100, 10000);
+    await waitUntilUsed(port, 100, 10000);
   }
 
   onComplete() {
@@ -91,7 +100,7 @@ exports.default = class WiremockLauncher {
     }
   }
 
-  _stopProcess = () => {
+  _stopProcess() {
     if (this.process && !this.process.killed) {
         console.log('shutting down wiremock');
         this.process.kill('SIGTERM');

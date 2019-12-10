@@ -181,4 +181,25 @@ export.config = {
 };
 ```
 
+### args
+List where you can pass all the supported arguments for configuring WireMock
+
+Note: you cannot pass the options (`port`, `rootDir`, `stdio`, `mavenBaseUrl`) here as they will be ignored.
+
+Type: `Array`
+
+Example:
+```js
+// wdio.conf.js
+export.config = {
+  // ...
+  services: [
+    ['wiremock', {
+      args: [ '--verbose', '--match-headers' ]
+    }]
+  ],
+  // ...
+};
+```
+
 For more information on WebdriverIO see the [homepage](https://webdriver.io).
