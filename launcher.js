@@ -45,7 +45,7 @@ exports.default = class WiremockLauncher {
     mavenBaseUrl = 'https://repo1.maven.org/maven2',
     skipWiremockInstall = false,
     args = []
-  }) {
+  } = {}) {
     this.args = [];
     this.args = this.args.concat(['-jar', compilerPath]);
     this.args = this.args.concat(['-port', port]);
