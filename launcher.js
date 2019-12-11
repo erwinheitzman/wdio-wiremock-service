@@ -52,6 +52,7 @@ exports.default = class WiremockLauncher {
     this.args = this.args.concat(['-root-dir', rootDir]);
     this.args = this.args.concat(args);
 
+    this.port = port;
     this.spawnOptions = { stdio, detached: true };
     this.url = `${
       mavenBaseUrl
@@ -90,7 +91,7 @@ exports.default = class WiremockLauncher {
       process.on('uncaughtException', this._stopProcess);
     }
 
-    await waitUntilUsed(port, 100, 10000);
+    await waitUntilUsed(this.port, 100, 10000);
   }
 
   onComplete() {
