@@ -68,21 +68,21 @@ exports.default = class WiremockLauncher {
     this.watchMode = !!config.watch;
 
     if (!existsSync(binPath) && !this.skipWiremockInstall) {
-      console.log(`Downloading WireMock standalone from Maven Central...\n  ${this.url}`);
+      process.stdout.write(`Downloading WireMock standalone from Maven Central...\n  ${this.url}\n`);
       const error = await installFile(this.url, binPath);
       if (error) {
-        throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}`);
+        throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}\n`);
       }
     }
 
     this.process = spawn('java', this.args, this.spawnOptions);
 
     this.process.on('error', (error) => {
-      console.error(error);
+      process.stderr.write(error);
     });
 
     this.process.on('exit', (code, signal) => {
-      console.log(`wiremock exited with code ${code} and signal ${signal}`);
+      process.stdout.write(`Wiremock exited with code ${code} ${signal ? 'and signal ' + signal : ''}\n\n`);
     });
 
     if (this.watchMode) {
@@ -102,7 +102,7 @@ exports.default = class WiremockLauncher {
 
   _stopProcess() {
     if (this.process && !this.process.killed) {
-        console.log('shutting down wiremock');
+        process.stdout.write('Shutting down wiremock\n');
         this.process.kill('SIGTERM');
     }
   }
