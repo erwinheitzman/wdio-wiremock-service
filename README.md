@@ -6,7 +6,7 @@
 
 [![Join the chat at https://gitter.im/erwinheitzman/wdio-wiremock-service](https://badges.gitter.im/erwinheitzman/wdio-wiremock-service.svg)](https://gitter.im/erwinheitzman/wdio-wiremock-service?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This service helps you to run [WireMock](http://wiremock.org/) seamlessly when running tests with [WebdriverIO](https://webdriver.io). It uses the well know [Maven](https://mvnrepository.com/repos/central) repository to download the WireMock jar for you which is then automatically installed, started and stopped. Stay up to date by joining the community over at [Gitter](https://gitter.im/erwinheitzman/wdio-wiremock-service) for help and support.
+This service helps you to run [WireMock](http://wiremock.org/) seamlessly when running tests with [WebdriverIO](https://webdriver.io). It uses the well known [Maven](https://mvnrepository.com/repos/central) repository to download the WireMock jar for you which is then automatically installed, started and stopped. Stay up to date by joining the community over at [Gitter](https://gitter.im/erwinheitzman/wdio-wiremock-service) for help and support.
 
 ## Installation
 
@@ -18,7 +18,7 @@ Instructions on how to install `WebdriverIO` can be found [here.](https://webdri
 
 ## Configuration
 
-In order to use the service you need to add it to your service array:
+In order to use the service with the wdio testrunner you need to add it to your service array:
 
 ```js
 // wdio.conf.js
@@ -28,6 +28,8 @@ export.config = {
   // ...
 };
 ```
+
+When using webdriverio standalone you need to add the service and trigger the `onPrepare` and `onComplate` hooks manually. An example can be found [here](####webdriverio-standalone) (the example makes use of [Jest](https://jestjs.io/en/)):
 
 ## Usage
 
@@ -40,7 +42,7 @@ WireMock allows you to use fixture files alongside your mocks, place these in th
 Example of a fixture:
 
 ```json
-Hello world
+Hello world!
 ```
 
 ### Mocks
@@ -57,7 +59,7 @@ Example of a mock:
   },
   "response": {
       "status": 200,
-      "body": "Hello world"
+      "body": "Hello world!"
   }
 }
 ```
@@ -81,21 +83,77 @@ Example of a mock with a fixture:
 
 Writing your first test is really straight forward:
 
+#### Using the WDIO testrunner in synch mode
+
 <sub><sup>`./test/specs/mytest.js`</sup></sub>
 ```js
 const fetch = require('node-fetch');
 const assert = require('assert');
 
-describe('My test', () => {
-  it('should assert the mock data', () => {
-    browser.call(async () => {
-      await fetch('http://localhost:8080/api/mytest')
-        .then((res) => res.text())
-        .then((body) => {
-            // assert that the request body returns the expected value
-            assert.equal(body, 'More content');
-        });
-    });
+it('should assert the mock data', () => {
+  browser.call(async () => {
+    await fetch('http://localhost:8080/api/mytest')
+      .then((res) => res.text())
+      .then((body) => {
+          // assert that the request body returns the expected value
+          assert.equal(body, 'More content');
+      });
+  });
+});
+```
+
+#### Usiong the WDIO testrunner in async mode
+
+```js
+const fetch = require('node-fetch');
+const assert = require('assert');
+
+it('should assert the mock data', async () => {
+  await browser.call(async () => {
+    await fetch('http://localhost:8080/api/mytest')
+      .then((res) => res.text())
+      .then((body) => {
+          // assert that the request body returns the expected value
+          assert.equal(body, 'More content');
+      });
+  });
+});
+```
+
+#### Using WebdriverIO Standalone
+
+<sub><sup>`./test/specs/mytest.js`</sup></sub>
+```js
+const nodeFetch = require('node-fetch')
+const { remote } = require('webdriverio')
+const { launcher } = require('wdio-wiremock-service') // import the service
+
+const WDIO_OPTIONS = {
+  port: 9515, // chromedriver port
+  path: '/', // remove `path` if you decided using something different from driver binaries.
+  capabilities: {
+      browserName: 'chrome'
+  },
+}
+
+let wiremockLauncher = new launcher() // create instance of the service
+let client;
+
+beforeAll(async () => {
+  await wiremockLauncher.onPrepare(WDIO_OPTIONS) // run the onPrepare hook
+  client = await remote(WDIO_OPTIONS)
+})
+
+afterAll(async () => {
+  await client.deleteSession()
+  await wiremockLauncher.onComplete() // run the onComplete hook
+});
+
+test('should showoff a mocked api response', async () => {
+  await client.call(async () => {
+    await nodeFetch('http://localhost:8080/api/mytest')
+      .then((res) => res.text())
+      .then((body) => expect(body).toEqual('Hello world!'));
   });
 });
 ```
