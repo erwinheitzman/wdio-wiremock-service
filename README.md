@@ -29,7 +29,7 @@ export.config = {
 };
 ```
 
-When using webdriverio standalone you need to add the service and trigger the `onPrepare` and `onComplate` hooks manually. An example can be found [here](####webdriverio-standalone) (the example makes use of [Jest](https://jestjs.io/en/)):
+When using webdriverio standalone you need to add the service and trigger the `onPrepare` and `onComplete` hooks manually. An example can be found [here](####webdriverio-standalone) (the example makes use of [Jest](https://jestjs.io/en/)):
 
 ## Usage
 
