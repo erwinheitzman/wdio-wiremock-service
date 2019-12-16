@@ -1,4 +1,4 @@
-const { createWriteStream, existsSync } = require('fs');
+const { createWriteStream, existsSync, mkdirSync } = require('fs');
 const { get } = require('https');
 const { join, resolve } = require('path');
 const { spawn } = require('child_process');
@@ -46,10 +46,16 @@ exports.default = class WiremockLauncher {
     skipWiremockInstall = false,
     args = []
   } = {}) {
+    const resolvedRootDir = resolve(rootDir);
+
+    if (!existsSync(resolvedRootDir)) {
+      mkdirSync(resolvedRootDir, { recursive: true });
+    }
+
     this.args = [];
     this.args = this.args.concat(['-jar', compilerPath]);
     this.args = this.args.concat(['-port', port]);
-    this.args = this.args.concat(['-root-dir', rootDir]);
+    this.args = this.args.concat(['-root-dir', resolvedRootDir]);
     this.args = this.args.concat(args);
 
     this.port = port;
