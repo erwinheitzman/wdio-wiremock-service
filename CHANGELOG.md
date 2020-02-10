@@ -1,3 +1,7 @@
+## 2.26.2
+
+- Added support for passing a different version
+
 ## 2.26.1
 
 - Added examples using the HTTP API to the docs

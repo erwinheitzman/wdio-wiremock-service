@@ -3,11 +3,6 @@ const { get } = require('https');
 const { join, resolve } = require('path');
 const { spawn } = require('child_process');
 const { waitUntilUsed } = require('tcp-port-used');
-const { version } = require('./package.json');
-
-const wmVersion = version.split('-').shift();
-const binPath = join(__dirname, `wiremock-standalone-${wmVersion}.jar`);
-const compilerPath = resolve(binPath);
 
 function httpRequest(url) {
   return new Promise((resolve, reject) => {
@@ -44,38 +39,42 @@ exports.default = class WiremockLauncher {
     stdio = 'inherit',
     mavenBaseUrl = 'https://repo1.maven.org/maven2',
     skipWiremockInstall = false,
-    args = []
+    args = [],
+    version = '2.26.0',
   } = {}) {
+    this.binPath = join(__dirname, `wiremock-standalone-${version}.jar`);
+
     const resolvedRootDir = resolve(rootDir);
+    const compilerPath = resolve(this.binPath);
 
     if (!existsSync(resolvedRootDir)) {
       mkdirSync(resolvedRootDir, { recursive: true });
     }
-
-    this.args = [];
-    this.args = this.args.concat(['-jar', compilerPath]);
-    this.args = this.args.concat(['-port', port]);
-    this.args = this.args.concat(['-root-dir', resolvedRootDir]);
-    this.args = this.args.concat(args);
 
     this.port = port;
     this.spawnOptions = { stdio, detached: true };
     this.url = `${
       mavenBaseUrl
     }/com/github/tomakehurst/wiremock-standalone/${
-      wmVersion
+      version
     }/wiremock-standalone-${
-      wmVersion
+      version
     }.jar`;
     this.skipWiremockInstall = !!skipWiremockInstall;
+
+    this.args = [];
+    this.args = this.args.concat(['-jar', compilerPath]);
+    this.args = this.args.concat(['-port', port]);
+    this.args = this.args.concat(['-root-dir', resolvedRootDir]);
+    this.args = this.args.concat(args);
   }
 
   async onPrepare(config, capabilities) {
     this.watchMode = !!config.watch;
 
-    if (!existsSync(binPath) && !this.skipWiremockInstall) {
+    if (!existsSync(this.binPath) && !this.skipWiremockInstall) {
       process.stdout.write(`Downloading WireMock standalone from Maven Central...\n  ${this.url}\n`);
-      const error = await installFile(this.url, binPath);
+      const error = await installFile(this.url, this.binPath);
       if (error) {
         throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}\n`);
       }
