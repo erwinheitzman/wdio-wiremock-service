@@ -79,6 +79,76 @@ Example of a mock with a fixture:
 }
 ```
 
+### HTTP API
+
+You can also create a stub mapping by posting to WireMock’s HTTP API, this is useful when you want to set different states.
+
+#### Basic stubbing
+
+The following code will configure a response with a status of 200 to be returned when the relative URL exactly matches /example/data (including query parameters). The body of the response will be `{ "dummy": [{ "data": "example" }]}` and a Content-Type header will be sent with a value of application/json.
+
+```js
+it(`a mocked api response created using WireMock's HTTP API`, async () => {
+  const expectedRes = {
+    dummy: [
+      {
+      data: 'example'
+      }
+    ]
+  };
+
+  const body = JSON.stringify({
+    request: {
+        method: 'GET',
+        url: '/example/data'
+    },
+    response: {
+      status: 200,
+      jsonBody: expectedRes
+    }
+  });
+
+  await browser.call(async () => {
+    await nodeFetch('http://localhost:8080/__admin/mappings/new', { method: 'POST', body })
+
+    await nodeFetch('http://localhost:8080/example/data')
+      .then((res: any) => res.json())
+      .then((body: any) => expect(body).toEqual(expectedRes))
+    });
+});
+```
+
+To create the stub described above via the JSON API, the following document can either be posted to `http://<host>:<port>/__admin/mappings` or placed in a file with a .json extension under the mappings directory as a fixture.
+
+#### Saving stubs
+
+Stub mappings which have been created can be persisted to the mappings directory via a call to WireMock by posting a request with an empty body to `http://<host>:<port>/__admin/mappings/save`.
+
+#### File serving
+
+When running the standalone JAR, files placed under the `__files` directory will be served up as if from under the docroot (rootDir), except if stub mapping matching the URL exists. For example if a file exists `__files/things/myfile.html` and no stub mapping will match `/things/myfile.html` then hitting `http://<host>:<port>/things/myfile.html` will serve the file.
+
+#### Removing stubs
+
+Stub mappings can be deleted via the HTTP API by issuing a `DELETE` to `http://<host>:<port>/__admin/mappings/{id}` where id is the UUID of the stub mapping, found in its id field.
+
+#### Reset
+
+The WireMock server can be reset at any time, removing all stub mappings and deleting the request log by sending a `POST` request with an empty body to `http://<host>:<port>/__admin/reset`.
+
+#### Getting all currently registered stub mappings
+
+All stub mappings can be fetched by sending a `GET` to `http://<host>:<port>/__admin/mappings`.
+Optionally limit and offset parameters can be specified to constrain the set returned e.g. `GET` `http://localhost:8080/__admin/mappings?limit=10&offset=50`.
+
+#### Getting a single stub mapping by ID
+
+A single stub mapping can be retrieved by ID by sending a `GET` to `http://<host>:<port>/__admin/mappings/{id}`.
+
+#### More information
+
+For more information about stubbing check [WireMock's official documentation](http://wiremock.org/docs/stubbing/).
+
 ### Writing tests
 
 Writing your first test is really straight forward:
@@ -90,7 +160,7 @@ Writing your first test is really straight forward:
 const fetch = require('node-fetch');
 const assert = require('assert');
 
-it('should assert the mock data', () => {
+it(`should assert the mock data`, () => {
   browser.call(async () => {
     await fetch('http://localhost:8080/api/mytest')
       .then((res) => res.text())
@@ -108,7 +178,7 @@ it('should assert the mock data', () => {
 const fetch = require('node-fetch');
 const assert = require('assert');
 
-it('should assert the mock data', async () => {
+it(`should assert the mock data`, async () => {
   await browser.call(async () => {
     await fetch('http://localhost:8080/api/mytest')
       .then((res) => res.text())

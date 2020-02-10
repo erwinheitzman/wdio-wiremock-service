@@ -1,3 +1,7 @@
+## 2.26.1
+
+- Added examples using the HTTP API to the docs
+
 ## 2.26.0
 
 - Updated to WireMock 2.26.0
