@@ -172,7 +172,7 @@ it(`should assert the mock data`, () => {
 });
 ```
 
-#### Usiong the WDIO testrunner in async mode
+#### Using the WDIO testrunner in async mode
 
 ```js
 const fetch = require('node-fetch');
