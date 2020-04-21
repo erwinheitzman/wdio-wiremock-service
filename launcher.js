@@ -33,19 +33,17 @@ async function installFile(from, to) {
 }
 
 exports.default = class WiremockLauncher {
-  constructor({
-    port = 8080,
-    rootDir = './mock',
-    stdio = 'inherit',
-    mavenBaseUrl = 'https://repo1.maven.org/maven2',
-    skipWiremockInstall = false,
-    args = [],
-    version = '2.26.0',
-  } = {}) {
-    this.binPath = join(__dirname, `wiremock-standalone-${version}.jar`);
+  constructor(options = {}) {
+    const port = options.port || 8080;
+    const rootDir = options.rootDir || './mock';
+    const stdio = options.stdio | 'inherit';
+    const mavenBaseUrl = options.mavenBaseUrl || 'https://repo1.maven.org/maven2';
+    const skipWiremockInstall = options.skipWiremockInstall || false;
+    const args = options.args || [];
+    const version = options.version || '2.26.3';
 
     const resolvedRootDir = resolve(rootDir);
-    const compilerPath = resolve(this.binPath);
+    const compilerPath = resolve(join(__dirname, `wiremock-standalone-${version}.jar`));
 
     if (!existsSync(resolvedRootDir)) {
       mkdirSync(resolvedRootDir, { recursive: true });
@@ -61,8 +59,6 @@ exports.default = class WiremockLauncher {
       version
     }.jar`;
     this.skipWiremockInstall = !!skipWiremockInstall;
-
-    this.args = [];
     this.args = this.args.concat(['-jar', compilerPath]);
     this.args = this.args.concat(['-port', port]);
     this.args = this.args.concat(['-root-dir', resolvedRootDir]);
