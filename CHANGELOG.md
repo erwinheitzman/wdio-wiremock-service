@@ -1,3 +1,9 @@
+## 2.26.3
+
+- Fixed port assignment issue
+- Fixed issue where the arguments weren't passed correctly
+- Updated default version to 2.26.3
+
 ## 2.26.2
 
 - Added support for passing a different version
