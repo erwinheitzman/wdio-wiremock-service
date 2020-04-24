@@ -1,3 +1,7 @@
+## 2.26.4
+
+- Fixed options assignments
+
 ## 2.26.3
 
 - Fixed port assignment issue

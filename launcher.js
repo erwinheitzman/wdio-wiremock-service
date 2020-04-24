@@ -35,20 +35,19 @@ async function installFile(from, to) {
 exports.default = class WiremockLauncher {
   constructor(options = {}) {
     const port = options.port || 8080;
-    const rootDir = options.rootDir || './mock';
-    const stdio = options.stdio | 'inherit';
+    const rootDir = resolve(options.rootDir || './mock');
+    const stdio = options.stdio || 'inherit';
     const mavenBaseUrl = options.mavenBaseUrl || 'https://repo1.maven.org/maven2';
     const skipWiremockInstall = options.skipWiremockInstall || false;
     const args = options.args || [];
     const version = options.version || '2.26.3';
+    const binPath = resolve(__dirname, `wiremock-standalone-${version}.jar`);
 
-    const resolvedRootDir = resolve(rootDir);
-    const compilerPath = resolve(join(__dirname, `wiremock-standalone-${version}.jar`));
-
-    if (!existsSync(resolvedRootDir)) {
-      mkdirSync(resolvedRootDir, { recursive: true });
+    if (!existsSync(rootDir)) {
+      mkdirSync(rootDir, { recursive: true });
     }
 
+    this.binPath = binPath;
     this.port = port;
     this.spawnOptions = { stdio, detached: true };
     this.url = `${
@@ -59,9 +58,10 @@ exports.default = class WiremockLauncher {
       version
     }.jar`;
     this.skipWiremockInstall = !!skipWiremockInstall;
-    this.args = this.args.concat(['-jar', compilerPath]);
+    this.args = args;
+    this.args = this.args.concat(['-jar', binPath]);
     this.args = this.args.concat(['-port', port]);
-    this.args = this.args.concat(['-root-dir', resolvedRootDir]);
+    this.args = this.args.concat(['-root-dir', rootDir]);
     this.args = this.args.concat(args);
   }
 
@@ -70,6 +70,7 @@ exports.default = class WiremockLauncher {
 
     if (!existsSync(this.binPath) && !this.skipWiremockInstall) {
       process.stdout.write(`Downloading WireMock standalone from Maven Central...\n  ${this.url}\n`);
+
       const error = await installFile(this.url, this.binPath);
       if (error) {
         throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}\n`);
