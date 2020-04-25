@@ -1,4 +1,5 @@
 const waitUntilUsed = jest.fn().mockResolvedValue(true);
+const existsSync = jest.fn().mockReturnValue(true);
 const spawn = jest.fn().mockReturnValue({ on: jest.fn() });
 
 jest.mock('child_process', () => ({
@@ -7,6 +8,11 @@ jest.mock('child_process', () => ({
 
 jest.mock('tcp-port-used', () => ({
     waitUntilUsed: waitUntilUsed,
+}));
+
+jest.mock('fs', () => ({
+    existsSync: existsSync,
+    mkdirSync: jest.fn(),
 }));
 
 import { resolve } from 'path';
@@ -89,6 +95,7 @@ it('should assign custom mavenBaseUrl', async () => {
     const url = 'maven-url/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar';
     const launcher = new WiremockLauncher({ mavenBaseUrl: 'maven-url' });
     launcher.installFile = jest.fn();
+    existsSync.mockReturnValue(false);
 
     await launcher.onPrepare({});
 
@@ -109,6 +116,7 @@ it('should not install wiremock when skipWiremockInstall is set to true', async 
 it('should install wiremock when skipWiremockInstall is set to false', async () => {
     const launcher = new WiremockLauncher({ skipWiremockInstall: false });
     launcher.installFile = jest.fn();
+    existsSync.mockReturnValue(false);
 
     await launcher.onPrepare({});
 

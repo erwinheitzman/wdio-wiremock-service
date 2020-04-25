@@ -9,4 +9,8 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "jest"]
   },
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }
