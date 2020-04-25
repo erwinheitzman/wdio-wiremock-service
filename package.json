@@ -6,8 +6,10 @@
   "homepage": "https://github.com/erwinheitzman/wdio-wiremock-service#readme",
   "license": "MIT",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "prepublish": "tsc"
   },
   "repository": {
     "type": "git",
