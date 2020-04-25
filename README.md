@@ -11,7 +11,7 @@ This service helps you to run [WireMock](http://wiremock.org/) seamlessly when r
 ## Installation
 
 ```bash
-npm install wdio-wiremock-service --save-dev
+npm i -D wdio-wiremock-service
 ```
 
 Instructions on how to install `WebdriverIO` can be found [here.](https://webdriver.io/docs/gettingstarted.html)

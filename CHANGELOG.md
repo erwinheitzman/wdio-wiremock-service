@@ -1,3 +1,13 @@
+## 5.0.0
+
+- Rewrote the service in TypeScript
+- Added tests
+- Added linting
+- Added styling
+- Added type declarations to the output
+- Fixed arguments assignment issue
+- Changed version to 5.0.0 as this service will add support for both WebdriverIO 5 and soon WebdriverIO 6
+
 ## 2.26.4
 
 - Fixed options assignments
