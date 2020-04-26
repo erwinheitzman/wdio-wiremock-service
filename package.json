@@ -5,8 +5,8 @@
   "author": "Erwin Heitzman <erwin.heitzman@gmail.com>",
   "homepage": "https://github.com/erwinheitzman/wdio-wiremock-service#readme",
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "jest",
     "prepublishOnly:": "tsc"
