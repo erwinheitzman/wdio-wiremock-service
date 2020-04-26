@@ -28,7 +28,7 @@ beforeEach(() => {
         '-port',
         8080,
         '-root-dir',
-        resolve(__dirname, './mock'),
+        'wiremock',
     ];
     spawnOptions = { detached: true, stdio: 'inherit' };
 });
@@ -73,7 +73,7 @@ it('should assign custom rootDir', async () => {
     const launcher = new WiremockLauncher({ rootDir: 'example' });
     launcher.installFile = jest.fn();
 
-    defaultArgs[5] = resolve(__dirname, 'example');
+    defaultArgs[5] = 'example';
 
     await launcher.onPrepare({});
 

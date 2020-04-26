@@ -50,7 +50,7 @@ export class WiremockLauncher {
 
     constructor(options: Options = {}) {
         const port = options.port || 8080;
-        const rootDir = resolve(__dirname, options.rootDir || './mock');
+        const rootDir = options.rootDir || 'wiremock';
         const stdio = options.stdio || 'inherit';
         const mavenBaseUrl = options.mavenBaseUrl || 'https://repo1.maven.org/maven2';
         const skipWiremockInstall = options.skipWiremockInstall || false;

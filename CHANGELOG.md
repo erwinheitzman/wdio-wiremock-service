@@ -1,5 +1,12 @@
 ## 5.0.0
 
+### Breaking changes
+
+- Changed the default rootDir value from `mock` to `wiremock`.\
+Fix: simply rename the directory to `wiremock` or add the `rootDir` property to the options object and pass the value `mock` to keep the directory as it is.
+
+### Notable changes
+
 - Rewrote the service in TypeScript
 - Added tests
 - Added linting
