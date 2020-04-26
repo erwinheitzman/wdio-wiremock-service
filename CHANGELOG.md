@@ -1,4 +1,6 @@
-## 5.0.0
+## 5.0.0 - 5.0.3
+
+Had to re-release because of the missing `lib` directory on publish. Will investigate in order to get the release process setup automatically.
 
 ### Breaking changes
 
