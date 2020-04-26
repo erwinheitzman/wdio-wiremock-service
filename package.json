@@ -11,8 +11,8 @@
     "/lib"
   ],
   "scripts": {
-    "test": "jest",
-    "prepare:": "tsc"
+    "prepare:": "tsc",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
