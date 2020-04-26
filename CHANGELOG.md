@@ -13,6 +13,7 @@ Fix: simply rename the directory to `wiremock` or add the `rootDir` property to 
 - Added styling
 - Added type declarations to the output
 - Fixed arguments assignment issue
+- Added WebdriverIO 5.X.X as a peer dependency
 - Changed version to 5.0.0 as this service will add support for both WebdriverIO 5 and soon WebdriverIO 6
 
 ## 2.26.4
