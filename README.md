@@ -10,8 +10,10 @@ This service helps you to run [WireMock](http://wiremock.org/) seamlessly when r
 
 ## Installation
 
+When using WebdriverIO 5 you need to use version 5 of this service.
+
 ```bash
-npm install wdio-wiremock-service --save-dev
+npm i -D wdio-wiremock-service
 ```
 
 Instructions on how to install `WebdriverIO` can be found [here.](https://webdriver.io/docs/gettingstarted.html)
@@ -275,7 +277,7 @@ Version of WireMock to be downloaded and used.
 
 Type: `String`
 
-Default: `2.26.0`
+Default: `2.26.3`
 
 Example:
 ```js

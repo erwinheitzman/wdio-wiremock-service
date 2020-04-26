@@ -1,3 +1,25 @@
+## 5.0.0
+
+### Breaking changes
+
+- Changed the default rootDir value from `mock` to `wiremock`.\
+Fix: simply rename the directory to `wiremock` or add the `rootDir` property to the options object and pass the value `mock` to keep the directory as it is.
+
+### Notable changes
+
+- Rewrote the service in TypeScript
+- Added tests
+- Added linting
+- Added styling
+- Added type declarations to the output
+- Fixed arguments assignment issue
+- Added WebdriverIO 5.X.X as a peer dependency
+- Changed version to 5.0.0 as this service will add support for both WebdriverIO 5 and soon WebdriverIO 6
+
+## 2.26.4
+
+- Fixed options assignments
+
 ## 2.26.3
 
 - Fixed port assignment issue

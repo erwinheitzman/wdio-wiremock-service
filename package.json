@@ -1,13 +1,18 @@
 {
   "name": "wdio-wiremock-service",
-  "version": "2.26.3",
+  "version": "5.0.0",
   "description": "A WebdriverIO service to start &amp; stop WireMock Standalone",
   "author": "Erwin Heitzman <erwin.heitzman@gmail.com>",
   "homepage": "https://github.com/erwinheitzman/wdio-wiremock-service#readme",
   "license": "MIT",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "/lib"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "prepublishOnly:": "tsc"
   },
   "repository": {
     "type": "git",
@@ -29,8 +34,37 @@
   "bugs": {
     "url": "https://github.com/erwinheitzman/wdio-wiremock-service/issues"
   },
+  "peerDependencies": {
+    "webdriverio": ">= 5.0.0 < 6.0.0"
+  },
   "dependencies": {
     "tcp-port-used": "^1.0.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.2",
+    "@types/tcp-port-used": "^1.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "husky": "^4.2.5",
+    "jest": "^25.4.0",
+    "lint-staged": "^10.1.7",
+    "prettier": "^2.0.5",
+    "ts-jest": "^25.4.0",
+    "typescript": "^3.8.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm t"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix"
+    ]
+  }
 }
