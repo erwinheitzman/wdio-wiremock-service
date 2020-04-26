@@ -28,7 +28,7 @@ export interface Options {
     rootDir?: string;
     stdio?: StdioOptions;
     mavenBaseUrl?: string;
-    args?: Array<string>;
+    args?: Array<any>;
     version?: string;
     skipWiremockInstall?: boolean;
 }
@@ -60,6 +60,14 @@ export class WiremockLauncher {
 
         if (!existsSync(rootDir)) {
             mkdirSync(rootDir, { recursive: true });
+        }
+
+        if (args.includes('-port')) {
+            throw new Error('Cannot set port using args. Use options.port instead.');
+        }
+
+        if (args.includes('-root-dir')) {
+            throw new Error('Cannot set root-dir using args. Use options.rootDir instead.');
         }
 
         this.binPath = binPath;
@@ -117,13 +125,12 @@ export class WiremockLauncher {
 
     async installFile(from: string, to: string): Promise<IncomingMessage> {
         process.stdout.write(`Downloading WireMock standalone from Maven Central...\n  ${this.url}\n`);
+        const res = await httpRequest(from);
 
-        return httpRequest(from).then((res) => {
-            return new Promise((resolve, reject) => {
-                res.pipe(createWriteStream(to));
-                res.on('end', () => resolve());
-                res.on('error', () => reject(new Error('Could not write to ' + to)));
-            });
+        return new Promise((resolve, reject) => {
+            res.pipe(createWriteStream(to));
+            res.on('end', () => resolve());
+            res.on('error', () => reject(new Error('Could not write to ' + to)));
         });
     }
 }

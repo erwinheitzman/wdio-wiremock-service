@@ -1,17 +1,17 @@
-const waitUntilUsed = jest.fn().mockResolvedValue(true);
-const existsSync = jest.fn().mockReturnValue(true);
+const waitUntilUsed = jest.fn();
+const existsSync = jest.fn();
 const spawn = jest.fn().mockReturnValue({ on: jest.fn() });
 
 jest.mock('child_process', () => ({
-    spawn: spawn,
+    spawn,
 }));
 
 jest.mock('tcp-port-used', () => ({
-    waitUntilUsed: waitUntilUsed,
+    waitUntilUsed,
 }));
 
 jest.mock('fs', () => ({
-    existsSync: existsSync,
+    existsSync,
     mkdirSync: jest.fn(),
 }));
 
@@ -188,4 +188,25 @@ it('should execute the _stopProcess method on completion when watchMode is not a
 
     expect(spawn).toHaveBeenCalledTimes(1);
     expect(launcher._stopProcess).toHaveBeenCalledTimes(1);
+});
+
+it('should throw when waitUntilUsed rejects', async () => {
+    const launcher = new WiremockLauncher();
+    launcher.installFile = jest.fn();
+    spawn.mockReturnValue({ on: jest.fn() });
+    waitUntilUsed.mockRejectedValue(new Error('Error: timeout'));
+
+    await expect(launcher.onPrepare({})).rejects.toThrowError('Error: timeout');
+});
+
+it('should throw error when trying to set port using the args', async () => {
+    expect(() => new WiremockLauncher({ args: ['-port', 9999] })).toThrowError(
+        'Cannot set port using args. Use options.port instead.',
+    );
+});
+
+it('should throw error when  to set root-dir using the args', async () => {
+    expect(() => new WiremockLauncher({ args: ['-root-dir', 'dummy'] })).toThrowError(
+        'Cannot set root-dir using args. Use options.rootDir instead.',
+    );
 });
