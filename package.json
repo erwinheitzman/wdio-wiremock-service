@@ -11,7 +11,7 @@
     "/lib"
   ],
   "scripts": {
-    "prepare:": "tsc",
+    "prepare": "tsc",
     "test": "jest"
   },
   "repository": {
