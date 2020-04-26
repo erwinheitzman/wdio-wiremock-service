@@ -9,7 +9,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "prepublish": "tsc"
+    "prepublishOnly:": "tsc"
   },
   "repository": {
     "type": "git",
