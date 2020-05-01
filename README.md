@@ -31,6 +31,8 @@ export.config = {
 };
 ```
 
+IMPORTANT in version 5 of WebdriverIO you will need to set the port manually!
+
 When using webdriverio standalone you need to add the service and trigger the `onPrepare` and `onComplete` hooks manually. An example can be found [here](####webdriverio-standalone) (the example makes use of [Jest](https://jestjs.io/en/)):
 
 ## Usage

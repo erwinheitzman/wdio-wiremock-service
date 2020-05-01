@@ -2,7 +2,7 @@ import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { get } from 'https';
 import { resolve } from 'path';
 import { spawn, ChildProcess, StdioOptions } from 'child_process';
-import { waitUntilUsed } from 'tcp-port-used';
+import { waitUntilUsed, waitUntilFree } from 'tcp-port-used';
 import { IncomingMessage } from 'http';
 
 function httpRequest(url: string): Promise<IncomingMessage> {
@@ -33,6 +33,12 @@ export interface Options {
     skipWiremockInstall?: boolean;
 }
 
+export type Capabilities = Array<{ [key: string]: any }> | { [key: string]: { [key: string]: any } };
+
+export interface WdioConfig {
+    watch?: boolean;
+}
+
 export interface SpawnOptions {
     detached: boolean;
     stdio: StdioOptions;
@@ -44,11 +50,11 @@ export class WiremockLauncher {
     spawnOptions: { stdio: StdioOptions; detached: boolean };
     url: string;
     skipWiremockInstall: boolean;
-    watchMode!: boolean;
-    process!: ChildProcess | null;
+    watchMode: boolean;
     binPath: string;
+    process!: ChildProcess | null;
 
-    constructor(options: Options = {}) {
+    constructor(options: Options = {}, capabilities?: Capabilities, config?: WdioConfig) {
         const port = options.port || 8080;
         const rootDir = options.rootDir || 'wiremock';
         const stdio = options.stdio || 'inherit';
@@ -70,6 +76,7 @@ export class WiremockLauncher {
             throw new Error('Cannot set root-dir using args. Use options.rootDir instead.');
         }
 
+        this.watchMode = Boolean(config?.watch);
         this.binPath = binPath;
         this.port = port;
         this.spawnOptions = { stdio, detached: true };
@@ -81,9 +88,7 @@ export class WiremockLauncher {
         this.args = this.args.concat(['-root-dir', rootDir]);
     }
 
-    async onPrepare(config: any) {
-        this.watchMode = !!config.watch;
-
+    async onPrepare() {
         if (!existsSync(this.binPath) && !this.skipWiremockInstall) {
             const error = await this.installFile(this.url, this.binPath);
             if (error) {
@@ -102,25 +107,27 @@ export class WiremockLauncher {
         });
 
         if (this.watchMode) {
-            process.on('SIGINT', this._stopProcess);
-            process.on('exit', this._stopProcess);
-            process.on('uncaughtException', this._stopProcess);
+            process.on('SIGINT', () => this.stopProcess(this.port));
+            process.on('exit', () => this.stopProcess(this.port));
+            process.on('uncaughtException', () => this.stopProcess(this.port));
         }
 
         await waitUntilUsed(this.port, 100, 10000);
     }
 
-    onComplete() {
+    async onComplete() {
         if (!this.watchMode) {
-            this._stopProcess();
+            await this.stopProcess(this.port);
         }
     }
 
-    _stopProcess() {
-        if (this.process && !this.process.killed) {
+    private async stopProcess(port: number) {
+        if (!this.process?.killed) {
             process.stdout.write('Shutting down wiremock\n');
-            this.process.kill('SIGTERM');
+            this.process?.kill('SIGTERM');
         }
+
+        await waitUntilFree(port, 100, 10000);
     }
 
     async installFile(from: string, to: string): Promise<IncomingMessage> {

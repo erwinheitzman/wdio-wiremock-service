@@ -1,4 +1,9 @@
-## 5.0.0 - 5.0.3
+## 6.0.0
+
+- Updated the service to be optimised for WebdriverIO v6
+- Fixed non-graceful shutdown when in watch mode
+
+## 5.0.0 - 5.0.2
 
 Had to re-release because of the missing `lib` directory on publish. Will investigate in order to get the release process setup automatically.
 
