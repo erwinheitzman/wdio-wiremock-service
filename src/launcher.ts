@@ -82,10 +82,7 @@ export class WiremockLauncher {
         this.spawnOptions = { stdio, detached: true };
         this.url = `${mavenBaseUrl}/com/github/tomakehurst/wiremock-standalone/${version}/wiremock-standalone-${version}.jar`;
         this.skipWiremockInstall = !!skipWiremockInstall;
-        this.args = args;
-        this.args = this.args.concat(['-jar', binPath]);
-        this.args = this.args.concat(['-port', port]);
-        this.args = this.args.concat(['-root-dir', rootDir]);
+        this.args = ['-jar', binPath, '-port', port, '-root-dir', rootDir].concat(args);
     }
 
     async onPrepare() {
