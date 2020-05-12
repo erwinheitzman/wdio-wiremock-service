@@ -1,4 +1,8 @@
-## 6.0.0
+## 6.0.2
+
+- Fixed Unrecognized option error when assigning arguments
+
+## 6.0.0 - 6.0.1
 
 - Updated the service to be optimised for WebdriverIO v6
 - Fixed non-graceful shutdown when in watch mode

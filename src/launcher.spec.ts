@@ -138,7 +138,7 @@ it('should concatenate the passed arguments with the required arguments', async 
     await launcher.onPrepare();
 
     expect(spawn).toHaveBeenCalledTimes(1);
-    expect(spawn).toHaveBeenCalledWith('java', args.concat(defaultArgs), spawnOptions);
+    expect(spawn).toHaveBeenCalledWith('java', defaultArgs.concat(args), spawnOptions);
 });
 
 it('should assign the stopProcess method when watchMode is active', async () => {
