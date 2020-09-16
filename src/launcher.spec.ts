@@ -1,7 +1,11 @@
 const waitUntilUsed = jest.fn();
 const waitUntilFree = jest.fn();
 const existsSync = jest.fn();
-const spawn = jest.fn().mockReturnValue({ on: jest.fn() });
+const spawn = jest.fn();
+
+let defaultArgs: Array<any>;
+let spawnOptions: SpawnOptions;
+let instance;
 
 jest.mock('child_process', () => ({
 	spawn,
@@ -18,117 +22,120 @@ jest.mock('fs', () => ({
 }));
 
 import { resolve } from 'path';
-import { WiremockLauncher, Options, Capabilities, WdioConfig, SpawnOptions } from './launcher';
+import { SpawnOptions } from 'child_process';
+import { WiremockLauncher } from './launcher';
+import { WireMock } from './wiremock';
 
-let defaultArgs: Array<any>;
-let spawnOptions: SpawnOptions;
-let options: Options;
-let capabilities: Capabilities;
-let wdioConfig: WdioConfig;
+WireMock['download'] = jest.fn();
 
 beforeEach(() => {
-	options = {};
-	capabilities = [{ browserName: 'chrome' }];
-	wdioConfig = {};
-	defaultArgs = ['-jar', resolve(__dirname, 'wiremock-standalone-2.26.3.jar'), '-port', 8080, '-root-dir', 'wiremock'];
+	(spawn as jest.Mock).mockReturnValue({ on: jest.fn() });
+	defaultArgs = ['-jar', resolve(__dirname, 'wiremock-standalone-2.27.2.jar'), '-port', 8080, '-root-dir', 'wiremock'];
 	spawnOptions = { detached: true, stdio: 'inherit' };
+	instance = null;
 });
 
 afterEach(() => {
+	jest.resetAllMocks();
+	jest.restoreAllMocks();
 	jest.clearAllMocks();
 });
 
 it('should start the service when no options are passed', async () => {
-	const launcher = new WiremockLauncher();
-	launcher.installFile = jest.fn();
+	instance = new WiremockLauncher();
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
 });
 
 it('should start the service when a empty options is passed', async () => {
-	const launcher = new WiremockLauncher(options);
-	launcher.installFile = jest.fn();
+	instance = new WiremockLauncher({});
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
 });
 
-it('should assign custom port', async () => {
-	const launcher = new WiremockLauncher({ ...options, port: 9999 });
-	launcher.installFile = jest.fn();
+it('should run wiremock with custom port', async () => {
+	instance = new WiremockLauncher({ port: 9999 });
 	defaultArgs[3] = 9999;
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
 });
 
-it('should assign custom rootDir', async () => {
-	const launcher = new WiremockLauncher({ ...options, rootDir: 'example' });
-	launcher.installFile = jest.fn();
-
+it('should run wiremock with custom rootDir', async () => {
+	instance = new WiremockLauncher({ rootDir: 'example' });
 	defaultArgs[5] = 'example';
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
 });
 
-it('should assign custom stdio', async () => {
-	const launcher = new WiremockLauncher({ ...options, stdio: 'ignore' });
-	launcher.installFile = jest.fn();
+it('should run wiremock with custom stdio', async () => {
+	instance = new WiremockLauncher({ stdio: 'ignore' });
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { ...spawnOptions, stdio: 'ignore' });
 });
 
-it('should assign custom mavenBaseUrl', async () => {
-	const url = 'maven-url/com/github/tomakehurst/wiremock-standalone/2.26.3/wiremock-standalone-2.26.3.jar';
-	const launcher = new WiremockLauncher({ ...options, mavenBaseUrl: 'maven-url' });
-	launcher.installFile = jest.fn();
+it('should run wiremock with custom mavenBaseUrl', async () => {
+	const url = 'maven-url/com/github/tomakehurst/wiremock-standalone/2.27.2/wiremock-standalone-2.27.2.jar';
+	instance = new WiremockLauncher({ mavenBaseUrl: 'maven-url' });
 	existsSync.mockReturnValue(false);
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
-	expect(launcher.installFile).toHaveBeenCalledWith(url, defaultArgs[1]);
+	expect(WireMock.download).toHaveBeenCalledWith(url, defaultArgs[1]);
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
 });
 
+it('should throw when WireMock.download rejects', async () => {
+	const rejectedError = 'rejected!';
+	const errorMessage = `Downloading WireMock jar from Maven Central failed: ${rejectedError}\n`;
+	instance = new WiremockLauncher();
+	existsSync.mockReturnValue(false);
+	(WireMock['download'] as jest.Mock).mockRejectedValue(rejectedError);
+
+	try {
+		await instance.onPrepare();
+	} catch (error) {
+		expect(error).toEqual(new Error(errorMessage));
+	}
+});
+
 it('should not install wiremock when skipWiremockInstall is set to true', async () => {
-	const launcher = new WiremockLauncher({ ...options, skipWiremockInstall: true });
-	launcher.installFile = jest.fn();
+	instance = new WiremockLauncher({ skipWiremockInstall: true });
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
-	expect(launcher.installFile).toHaveBeenCalledTimes(0);
+	expect(WireMock.download).toHaveBeenCalledTimes(0);
 });
 
 it('should install wiremock when skipWiremockInstall is set to false', async () => {
-	const launcher = new WiremockLauncher({ ...options, skipWiremockInstall: false });
-	launcher.installFile = jest.fn();
+	instance = new WiremockLauncher({ skipWiremockInstall: false });
 	existsSync.mockReturnValue(false);
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
-	expect(launcher.installFile).toHaveBeenCalledTimes(1);
+	expect(WireMock.download).toHaveBeenCalledTimes(1);
 });
 
 it('should concatenate the passed arguments with the required arguments', async () => {
 	const args = ['--disable-http', '--bind-address', '0.0.0.0'];
-	const launcher = new WiremockLauncher({ ...options, args });
-	launcher.installFile = jest.fn();
+	instance = new WiremockLauncher({ args });
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs.concat(args), spawnOptions);
@@ -139,12 +146,11 @@ it('should assign the stopProcess method when watchMode is active', async () => 
 	const mockProcessOn = jest.spyOn(process, 'on').mockImplementation((a: any, b: any): any => {
 		callbacks.push(b);
 	});
-	const launcher = new WiremockLauncher(options, capabilities, { ...wdioConfig, watch: true });
-	launcher['stopProcess'] = jest.fn();
-	launcher.installFile = jest.fn();
+	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: true });
+	instance['stopProcess'] = jest.fn();
 	spawn.mockReturnValue({ on: jest.fn() });
 
-	await launcher.onPrepare();
+	await instance.onPrepare();
 	for (const callback of callbacks) {
 		callback();
 	}
@@ -154,59 +160,44 @@ it('should assign the stopProcess method when watchMode is active', async () => 
 	expect(mockProcessOn.mock.calls[0][0]).toEqual('SIGINT');
 	expect(mockProcessOn.mock.calls[1][0]).toEqual('exit');
 	expect(mockProcessOn.mock.calls[2][0]).toEqual('uncaughtException');
-	expect(launcher['stopProcess']).toBeCalledTimes(3);
+	expect(instance['stopProcess']).toBeCalledTimes(3);
 });
 
 it('should not execute the stopProcess method on completion when watchMode is active', async () => {
-	const launcher = new WiremockLauncher(options, capabilities, { ...wdioConfig, watch: true });
-	launcher.installFile = jest.fn();
-	launcher['stopProcess'] = jest.fn();
+	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: true });
+	instance['stopProcess'] = jest.fn();
 	spawn.mockReturnValue({ on: jest.fn() });
 
-	await launcher.onPrepare();
-	launcher.onComplete();
+	await instance.onPrepare();
+	instance.onComplete();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(launcher['stopProcess']).toHaveBeenCalledTimes(0);
+	expect(instance['stopProcess']).toHaveBeenCalledTimes(0);
 });
 
 it('should execute the stopProcess method on completion when watchMode is not active', async () => {
-	const launcher = new WiremockLauncher(options, capabilities, { ...wdioConfig, watch: false });
-	launcher.installFile = jest.fn();
-	launcher['stopProcess'] = jest.fn();
+	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: false });
+	instance['stopProcess'] = jest.fn();
 	spawn.mockReturnValue({ on: jest.fn() });
 
-	await launcher.onPrepare();
-	launcher.onComplete();
+	await instance.onPrepare();
+	instance.onComplete();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(launcher['stopProcess']).toHaveBeenCalledTimes(1);
+	expect(instance['stopProcess']).toHaveBeenCalledTimes(1);
 });
 
 it('should throw when waitUntilUsed rejects', async () => {
-	const launcher = new WiremockLauncher();
-	launcher.installFile = jest.fn();
+	instance = new WiremockLauncher();
 	spawn.mockReturnValue({ on: jest.fn() });
 	waitUntilUsed.mockRejectedValue(new Error('Error: timeout'));
 
-	await expect(launcher.onPrepare()).rejects.toThrowError('Error: timeout');
+	await expect(instance.onPrepare()).rejects.toThrowError('Error: timeout');
 });
 
 it('should throw when waitUntilFree rejects', async () => {
-	const launcher = new WiremockLauncher();
+	instance = new WiremockLauncher();
 	waitUntilFree.mockRejectedValue(new Error('Error: timeout'));
 
-	await expect(launcher.onComplete()).rejects.toThrowError('Error: timeout');
-});
-
-it('should throw error when trying to set port using the args', async () => {
-	expect(() => new WiremockLauncher({ ...options, args: ['-port', 9999] })).toThrowError(
-		'Cannot set port using args. Use options.port instead.',
-	);
-});
-
-it('should throw error when  to set root-dir using the args', async () => {
-	expect(() => new WiremockLauncher({ ...options, args: ['-root-dir', 'dummy'] })).toThrowError(
-		'Cannot set root-dir using args. Use options.rootDir instead.',
-	);
+	await expect(instance.onComplete()).rejects.toThrowError('Error: timeout');
 });
