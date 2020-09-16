@@ -1,3 +1,9 @@
+## 6.0.3
+
+- Split logic
+- Added more tests
+- Updated dependencies
+
 ## 6.0.2
 
 - Fixed Unrecognized option error when assigning arguments
