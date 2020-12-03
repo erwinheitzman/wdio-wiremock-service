@@ -1,3 +1,8 @@
+## 6.0.4
+
+- Fixed a minor issue with some parameter types
+- Updated dependencies
+
 ## 6.0.3
 
 - Split logic
