@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
-import { ChildProcess, StdioOptions } from 'child_process';
-import { Options, Capabilities, WdioConfig } from './common/types';
+import type { ChildProcess, StdioOptions } from 'child_process';
+import type { Options, Capabilities, WdioConfig } from './common/types';
 
 export abstract class Plugin {
 	protected readonly args: Array<any>;

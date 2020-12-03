@@ -1,5 +1,9 @@
 import { StdioOptions } from 'child_process';
 
+interface Capability {
+	[key: string]: any;
+}
+
 export interface Options {
 	port?: number;
 	rootDir?: string;
@@ -12,6 +16,7 @@ export interface Options {
 
 export interface WdioConfig {
 	watch?: boolean;
+	[key: string]: any;
 }
 
-export type Capabilities = Array<{ [key: string]: any }> | { [key: string]: { [key: string]: any } };
+export type Capabilities = Array<Capability> | { [key: string]: Capability };

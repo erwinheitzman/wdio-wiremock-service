@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import { waitUntilUsed, waitUntilFree } from 'tcp-port-used';
 import { WireMock } from './wiremock';
 import { Plugin } from './plugin';
-import { Options, Capabilities, WdioConfig } from './common/types';
+import type { Options, Capabilities, WdioConfig } from './common/types';
 
 export class WiremockLauncher extends Plugin {
 	constructor(options: Options = {}, capabilities?: Capabilities, config?: WdioConfig) {
