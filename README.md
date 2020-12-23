@@ -157,8 +157,7 @@ Writing your first test is really straight forward:
 
 #### Using the WDIO testrunner in synch mode
 
-<sub><sup>`./test/specs/mytest.js`</sup></sub>
-```js
+```js title="./test/specs/mytest.js"
 const fetch = require('node-fetch');
 const assert = require('assert');
 
@@ -194,8 +193,7 @@ it(`should assert the mock data`, async () => {
 
 #### Using WebdriverIO Standalone
 
-<sub><sup>`./test/specs/mytest.js`</sup></sub>
-```js
+```js title="./test/specs/mytest.js"
 const nodeFetch = require('node-fetch')
 const { remote } = require('webdriverio')
 const { launcher } = require('wdio-wiremock-service') // import the service
