@@ -169,7 +169,6 @@ it('should assign the stopProcess method when watchMode is active', async () => 
 	});
 	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: true });
 	instance['stopProcess'] = jest.fn();
-	// spawn.mockReturnValue({ on: jest.fn() });
 
 	await instance.onPrepare();
 	for (const callback of callbacks) {
@@ -187,7 +186,6 @@ it('should assign the stopProcess method when watchMode is active', async () => 
 it('should not execute the stopProcess method on completion when watchMode is active', async () => {
 	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: true });
 	instance['stopProcess'] = jest.fn();
-	// spawn.mockReturnValue({ on: jest.fn() });
 
 	await instance.onPrepare();
 	instance.onComplete();
@@ -199,7 +197,6 @@ it('should not execute the stopProcess method on completion when watchMode is ac
 it('should execute the stopProcess method on completion when watchMode is not active', async () => {
 	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: false });
 	instance['stopProcess'] = jest.fn();
-	// spawn.mockReturnValue({ on: jest.fn() });
 
 	await instance.onPrepare();
 	instance.onComplete();
@@ -210,7 +207,6 @@ it('should execute the stopProcess method on completion when watchMode is not ac
 
 it('should throw when waitUntilUsed rejects', async () => {
 	instance = new WiremockLauncher();
-	// spawn.mockReturnValue({ on: jest.fn() });
 	waitUntilUsed.mockRejectedValue(new Error('Error: timeout'));
 
 	await expect(instance.onPrepare()).rejects.toThrowError('Error: timeout');
