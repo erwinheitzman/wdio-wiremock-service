@@ -291,13 +291,12 @@ export.config = {
 };
 ```
 
-### stdio
-Level of logging (for simplicity this can be set to: `pipe`, `ignore`, `inherit`).
-For more information see [stdio](https://nodejs.org/api/child_process.html#child_process_options_stdio).
+### silent
+Silent mode for logging WireMock's output (including additional logging from the service itself).
 
-Type: `Array | String`
+Type: `Boolean`
 
-Default: `inherit`
+Default: `false`
 
 Example:
 ```js
@@ -305,7 +304,7 @@ Example:
 export.config = {
   // ...
   services: [
-    ['wiremock', { stdio: 'inherit' }]
+    ['wiremock', { silent: true }]
   ],
   // ...
 };

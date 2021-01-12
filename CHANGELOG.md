@@ -1,3 +1,9 @@
+## 6.0.5
+
+- Removed stdio option
+- Added silent mode
+- Updated dependencies
+
 ## 6.0.4
 
 - Fixed a minor issue with some parameter types

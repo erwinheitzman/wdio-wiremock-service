@@ -1,11 +1,12 @@
 const waitUntilUsed = jest.fn();
 const waitUntilFree = jest.fn();
 const existsSync = jest.fn();
+const mockStdoutPipe = jest.fn();
+const mockStderrPipe = jest.fn();
 const spawn = jest.fn();
 
-let defaultArgs: Array<any>;
-let spawnOptions: SpawnOptions;
-let instance;
+let defaultArgs: Array<string>;
+let instance: WiremockLauncher | null;
 
 jest.mock('child_process', () => ({
 	spawn,
@@ -22,17 +23,26 @@ jest.mock('fs', () => ({
 }));
 
 import { resolve } from 'path';
-import { SpawnOptions } from 'child_process';
 import { WiremockLauncher } from './launcher';
 import { WireMock } from './wiremock';
 
 WireMock['download'] = jest.fn();
 
 beforeEach(() => {
-	(spawn as jest.Mock).mockReturnValue({ on: jest.fn() });
-	defaultArgs = ['-jar', resolve(__dirname, 'wiremock-standalone-2.27.2.jar'), '-port', 8080, '-root-dir', 'wiremock'];
-	spawnOptions = { detached: true, stdio: 'inherit' };
+	defaultArgs = [
+		'-jar',
+		resolve(__dirname, 'wiremock-standalone-2.27.2.jar'),
+		'-port',
+		'8080',
+		'-root-dir',
+		'wiremock',
+	];
 	instance = null;
+	spawn.mockReturnValue({
+		stdout: { pipe: mockStdoutPipe },
+		stderr: { pipe: mockStderrPipe },
+		on: jest.fn(),
+	});
 });
 
 afterEach(() => {
@@ -47,7 +57,7 @@ it('should start the service when no options are passed', async () => {
 	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
+	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { detached: true });
 });
 
 it('should start the service when a empty options is passed', async () => {
@@ -56,17 +66,17 @@ it('should start the service when a empty options is passed', async () => {
 	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
+	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { detached: true });
 });
 
 it('should run wiremock with custom port', async () => {
 	instance = new WiremockLauncher({ port: 9999 });
-	defaultArgs[3] = 9999;
+	defaultArgs[3] = '9999';
 
 	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
+	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { detached: true });
 });
 
 it('should run wiremock with custom rootDir', async () => {
@@ -76,16 +86,27 @@ it('should run wiremock with custom rootDir', async () => {
 	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
+	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { detached: true });
 });
 
-it('should run wiremock with custom stdio', async () => {
-	instance = new WiremockLauncher({ stdio: 'ignore' });
+it('should run wiremock with silent mode', async () => {
+	instance = new WiremockLauncher({ silent: true });
 
 	await instance.onPrepare();
 
-	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { ...spawnOptions, stdio: 'ignore' });
+	expect(instance['silent']).toEqual(true);
+	expect(mockStdoutPipe).toHaveBeenCalledTimes(0);
+	expect(mockStderrPipe).toHaveBeenCalledTimes(0);
+});
+
+it('should run wiremock without silent mode', async () => {
+	instance = new WiremockLauncher({ silent: false });
+
+	await instance.onPrepare();
+
+	expect(instance['silent']).toEqual(false);
+	expect(mockStdoutPipe).toHaveBeenCalledTimes(1);
+	expect(mockStderrPipe).toHaveBeenCalledTimes(1);
 });
 
 it('should run wiremock with custom mavenBaseUrl', async () => {
@@ -97,7 +118,7 @@ it('should run wiremock with custom mavenBaseUrl', async () => {
 
 	expect(WireMock.download).toHaveBeenCalledWith(url, defaultArgs[1]);
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, spawnOptions);
+	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { detached: true });
 });
 
 it('should throw when WireMock.download rejects', async () => {
@@ -138,17 +159,17 @@ it('should concatenate the passed arguments with the required arguments', async 
 	await instance.onPrepare();
 
 	expect(spawn).toHaveBeenCalledTimes(1);
-	expect(spawn).toHaveBeenCalledWith('java', defaultArgs.concat(args), spawnOptions);
+	expect(spawn).toHaveBeenCalledWith('java', defaultArgs.concat(args), { detached: true });
 });
 
 it('should assign the stopProcess method when watchMode is active', async () => {
 	const callbacks: any[] = [];
-	const mockProcessOn = jest.spyOn(process, 'on').mockImplementation((a: any, b: any): any => {
+	const mockProcessOn = jest.spyOn(process, 'on').mockImplementation((a: string | symbol, b: unknown): any => {
 		callbacks.push(b);
 	});
 	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: true });
 	instance['stopProcess'] = jest.fn();
-	spawn.mockReturnValue({ on: jest.fn() });
+	// spawn.mockReturnValue({ on: jest.fn() });
 
 	await instance.onPrepare();
 	for (const callback of callbacks) {
@@ -166,7 +187,7 @@ it('should assign the stopProcess method when watchMode is active', async () => 
 it('should not execute the stopProcess method on completion when watchMode is active', async () => {
 	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: true });
 	instance['stopProcess'] = jest.fn();
-	spawn.mockReturnValue({ on: jest.fn() });
+	// spawn.mockReturnValue({ on: jest.fn() });
 
 	await instance.onPrepare();
 	instance.onComplete();
@@ -178,7 +199,7 @@ it('should not execute the stopProcess method on completion when watchMode is ac
 it('should execute the stopProcess method on completion when watchMode is not active', async () => {
 	instance = new WiremockLauncher({}, [{ browserName: 'chrome' }], { watch: false });
 	instance['stopProcess'] = jest.fn();
-	spawn.mockReturnValue({ on: jest.fn() });
+	// spawn.mockReturnValue({ on: jest.fn() });
 
 	await instance.onPrepare();
 	instance.onComplete();
@@ -189,7 +210,7 @@ it('should execute the stopProcess method on completion when watchMode is not ac
 
 it('should throw when waitUntilUsed rejects', async () => {
 	instance = new WiremockLauncher();
-	spawn.mockReturnValue({ on: jest.fn() });
+	// spawn.mockReturnValue({ on: jest.fn() });
 	waitUntilUsed.mockRejectedValue(new Error('Error: timeout'));
 
 	await expect(instance.onPrepare()).rejects.toThrowError('Error: timeout');
