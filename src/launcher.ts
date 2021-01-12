@@ -24,8 +24,6 @@ export class WiremockLauncher extends Plugin {
 		this.process = spawn('java', this.args, { detached: true });
 
 		if (!this.silent && this.process.stdout && this.process.stderr) {
-			console.log('BOOOOO');
-
 			this.process.stdout.pipe(process.stdout);
 			this.process.stderr.pipe(process.stderr);
 		}
