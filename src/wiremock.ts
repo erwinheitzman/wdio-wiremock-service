@@ -1,6 +1,6 @@
 import { createWriteStream } from 'fs';
 import { get } from 'https';
-import { IncomingMessage } from 'http';
+import type { IncomingMessage } from 'http';
 
 export class WireMock {
 	static async download(from: string, to: string) {

@@ -1,16 +1,18 @@
 import { existsSync } from 'fs';
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { waitUntilUsed, waitUntilFree } from 'tcp-port-used';
 import { WireMock } from './wiremock';
 import { Plugin } from './plugin';
-import { Options, Capabilities, WdioConfig } from './common/types';
+import type { Options, Capabilities, WdioConfig } from './common/types';
 
 export class WiremockLauncher extends Plugin {
+	protected process!: ChildProcess | null;
+
 	constructor(options: Options = {}, capabilities?: Capabilities, config?: WdioConfig) {
 		super(options, capabilities, config);
 	}
 
-	async onPrepare() {
+	async onPrepare(): Promise<void> {
 		if (!existsSync(this.binPath) && !this.skipWiremockInstall) {
 			try {
 				await WireMock.download(this.url, this.binPath);
@@ -19,11 +21,12 @@ export class WiremockLauncher extends Plugin {
 			}
 		}
 
-		this.process = spawn('java', this.args, this.spawnOptions);
+		this.process = spawn('java', this.args, { detached: true });
 
-		this.process.on('error', (error) => {
-			process.stderr.write(error.message);
-		});
+		if (!this.silent && this.process.stdout && this.process.stderr) {
+			this.process.stdout.pipe(process.stdout);
+			this.process.stderr.pipe(process.stderr);
+		}
 
 		this.process.on('exit', () => {
 			process.stdout.write(`Wiremock exited\n\n`);
@@ -38,7 +41,7 @@ export class WiremockLauncher extends Plugin {
 		await waitUntilUsed(this.port, 100, 10000);
 	}
 
-	async onComplete() {
+	async onComplete(): Promise<void> {
 		if (!this.watchMode) {
 			await this.stopProcess(this.port);
 		}
@@ -46,7 +49,7 @@ export class WiremockLauncher extends Plugin {
 
 	private async stopProcess(port: number) {
 		if (!this.process?.killed) {
-			this.process?.kill();
+			this.process?.kill(-this.process.pid);
 		}
 
 		await waitUntilFree(port, 100, 10000);

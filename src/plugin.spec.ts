@@ -52,14 +52,14 @@ it('should assign custom rootDir', () => {
 	expect(mkdirSync).toHaveBeenCalledWith('example', { recursive: true });
 });
 
-it('should have default stdio', () => {
+it('should have silent mode set to false', () => {
 	instance = new WiremockLauncher();
-	expect(instance['spawnOptions'].stdio).toEqual('inherit');
+	expect(instance['silent']).toEqual(false);
 });
 
-it('should assign custom stdio', () => {
-	instance = new WiremockLauncher({ stdio: 'ignore' });
-	expect(instance['spawnOptions'].stdio).toEqual('ignore');
+it('should assign silent mode', () => {
+	instance = new WiremockLauncher({ silent: true });
+	expect(instance['silent']).toEqual(true);
 });
 
 it('should have default url', () => {
@@ -107,17 +107,17 @@ it('should assign true to skipWiremockInstall', () => {
 it('should have default args', () => {
 	resolve.mockReturnValue('dummy');
 	instance = new WiremockLauncher();
-	expect(instance['args']).toEqual(['-jar', 'dummy', '-port', 8080, '-root-dir', 'wiremock']);
+	expect(instance['args']).toEqual(['-jar', 'dummy', '-port', '8080', '-root-dir', 'wiremock']);
 });
 
 it('should assign args', () => {
 	resolve.mockReturnValue('dummy');
 	instance = new WiremockLauncher({ port: 9999, rootDir: 'dummy-dir', args: ['--test', 'test'] });
-	expect(instance['args']).toEqual(['-jar', 'dummy', '-port', 9999, '-root-dir', 'dummy-dir', '--test', 'test']);
+	expect(instance['args']).toEqual(['-jar', 'dummy', '-port', '9999', '-root-dir', 'dummy-dir', '--test', 'test']);
 });
 
 it('should throw error when trying to set port using the args', () => {
-	expect(() => new WiremockLauncher({ args: ['-port', 9999] })).toThrowError(
+	expect(() => new WiremockLauncher({ args: ['-port', '9999'] })).toThrowError(
 		'Cannot set port using args. Use options.port instead.',
 	);
 });

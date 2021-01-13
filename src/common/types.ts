@@ -1,17 +1,20 @@
-import { StdioOptions } from 'child_process';
+interface Capability {
+	[key: string]: unknown;
+}
 
 export interface Options {
 	port?: number;
 	rootDir?: string;
-	stdio?: StdioOptions;
 	mavenBaseUrl?: string;
-	args?: Array<any>;
+	args?: Array<string>;
 	version?: string;
 	skipWiremockInstall?: boolean;
+	silent?: boolean;
 }
 
 export interface WdioConfig {
 	watch?: boolean;
+	[key: string]: unknown;
 }
 
-export type Capabilities = Array<{ [key: string]: any }> | { [key: string]: { [key: string]: any } };
+export type Capabilities = Array<Capability> | { [key: string]: Capability };
