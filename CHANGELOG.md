@@ -1,4 +1,4 @@
-## 6.0.5
+## 6.0.6
 
 - fixed killing of process
 
