@@ -49,7 +49,7 @@ export class WiremockLauncher extends Plugin {
 
 	private async stopProcess(port: number) {
 		if (!this.process?.killed) {
-			this.process?.kill(-this.process.pid);
+			this.process?.kill();
 		}
 
 		await waitUntilFree(port, 100, 10000);

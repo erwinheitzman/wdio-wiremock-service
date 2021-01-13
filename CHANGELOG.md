@@ -1,3 +1,7 @@
+## 6.0.6
+
+- fixed killing of process
+
 ## 6.0.5
 
 - Removed stdio option
