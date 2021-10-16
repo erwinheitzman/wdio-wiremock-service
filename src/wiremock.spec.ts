@@ -26,7 +26,7 @@ afterEach(() => {
 it('should log a download message', async () => {
 	await WireMock.download(downloadUrl, targetPath);
 	expect(process.stdout.write).toHaveBeenCalledWith(
-		`Downloading WireMock standalone from Maven Central...\n  ${downloadUrl}\n`,
+		`Downloading WireMock standalone from Maven Central...\n  ${downloadUrl}\n`
 	);
 });
 

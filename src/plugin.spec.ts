@@ -118,12 +118,12 @@ it('should assign args', () => {
 
 it('should throw error when trying to set port using the args', () => {
 	expect(() => new WiremockLauncher({ args: ['-port', '9999'] })).toThrowError(
-		'Cannot set port using args. Use options.port instead.',
+		'Cannot set port using args. Use options.port instead.'
 	);
 });
 
 it('should throw error when  to set root-dir using the args', () => {
 	expect(() => new WiremockLauncher({ args: ['-root-dir', 'dummy'] })).toThrowError(
-		'Cannot set root-dir using args. Use options.rootDir instead.',
+		'Cannot set root-dir using args. Use options.rootDir instead.'
 	);
 });
