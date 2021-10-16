@@ -1,3 +1,11 @@
+## 6.0.7
+
+- Updated dependencies
+- Removed obsolete dependencies
+- Updated configurations
+- Changed Husky setup
+- Cleaned up project
+
 ## 6.0.6
 
 - fixed killing of process
