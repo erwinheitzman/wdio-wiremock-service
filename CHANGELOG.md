@@ -1,3 +1,7 @@
+## 7.0.1
+
+- Fix download url and download error message
+
 ## 7.0.0
 
 - Updated dependencies

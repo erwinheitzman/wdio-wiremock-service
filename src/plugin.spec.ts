@@ -62,7 +62,9 @@ it('should assign silent mode', () => {
 
 it('should have default url', () => {
 	instance = new WiremockLauncher();
-	expect(instance['url']).toEqual('https://github.com/wiremock/wiremock/archive/refs/tags/3.3.1.tar.gz');
+	expect(instance['url']).toEqual(
+		'https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.3.1/wiremock-standalone-3.3.1.jar',
+	);
 });
 
 it('should assign custom url', () => {
@@ -73,7 +75,9 @@ it('should assign custom url', () => {
 it('should assign version to url', () => {
 	const customVersion = '9.9.999';
 	instance = new WiremockLauncher({ version: customVersion });
-	expect(instance['url']).toEqual(`https://github.com/wiremock/wiremock/archive/refs/tags/${customVersion}.tar.gz`);
+	expect(instance['url']).toEqual(
+		`https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/${customVersion}/wiremock-standalone-${customVersion}.jar`,
+	);
 });
 
 it('should assign false to watchMode', () => {
