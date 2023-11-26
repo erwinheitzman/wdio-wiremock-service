@@ -1,3 +1,11 @@
+## 7.0.0
+
+- Updated dependencies
+- Updated documentation
+- Added a downloadUrl option
+- changed the default Wiremock version to 3.3.1
+- changed the repository to download Wiremock from to GitHub instead of maven
+
 ## 6.0.7
 
 - Updated dependencies

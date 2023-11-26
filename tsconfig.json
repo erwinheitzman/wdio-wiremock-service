@@ -1,14 +1,7 @@
 {
+	"extends": "@tsconfig/node18/tsconfig.json",
 	"compilerOptions": {
-		"target": "es6",
-		"module": "commonjs",
-		"outDir": "lib/",
-		"declaration": true,
-		"strict": true,
-		"esModuleInterop": true,
-		"resolveJsonModule": true,
-		"forceConsistentCasingInFileNames": true,
-		"types": ["node", "jest"]
+		"outDir": "lib/"
 	},
 	"include": ["src"],
 	"exclude": ["**/*.spec.ts"]

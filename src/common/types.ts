@@ -5,11 +5,12 @@ interface Capability {
 export interface Options {
 	port?: number;
 	rootDir?: string;
-	mavenBaseUrl?: string;
+	downloadUrl?: string;
 	args?: Array<string>;
 	version?: string;
 	skipWiremockInstall?: boolean;
 	silent?: boolean;
+	binPath?: string;
 }
 
 export interface WdioConfig {
