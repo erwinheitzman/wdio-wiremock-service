@@ -1,8 +1,6 @@
 const resolve = jest.fn();
 const existsSync = jest.fn();
 const mkdirSync = jest.fn();
-const mavenBaseRepo = 'https://repo1.maven.org/maven2';
-const mavenBaseUrl = '/com/github/tomakehurst/wiremock-standalone/2.27.2/wiremock-standalone-2.27.2.jar';
 
 let instance;
 
@@ -64,17 +62,18 @@ it('should assign silent mode', () => {
 
 it('should have default url', () => {
 	instance = new WiremockLauncher();
-	expect(instance['url']).toEqual(mavenBaseRepo + mavenBaseUrl);
+	expect(instance['url']).toEqual('https://github.com/wiremock/wiremock/archive/refs/tags/3.3.1.tar.gz');
 });
 
 it('should assign custom url', () => {
-	instance = new WiremockLauncher({ mavenBaseUrl: 'maven-url' });
-	expect(instance['url']).toEqual('maven-url' + mavenBaseUrl);
+	instance = new WiremockLauncher({ downloadUrl: 'custom-url' });
+	expect(instance['url']).toEqual('custom-url');
 });
 
 it('should assign version to url', () => {
-	instance = new WiremockLauncher({ version: 'version' });
-	expect(instance['url']).toEqual((mavenBaseRepo + mavenBaseUrl).replace(/2.27.2/g, 'version'));
+	const customVersion = '9.9.999';
+	instance = new WiremockLauncher({ version: customVersion });
+	expect(instance['url']).toEqual(`https://github.com/wiremock/wiremock/archive/refs/tags/${customVersion}.tar.gz`);
 });
 
 it('should assign false to watchMode', () => {
@@ -90,7 +89,7 @@ it('should assign true to watchMode', () => {
 it('should assign binary path to binPath', () => {
 	resolve.mockReturnValue('dummy');
 	instance = new WiremockLauncher();
-	expect(resolve).toHaveBeenCalledWith(__dirname, `wiremock-standalone-2.27.2.jar`);
+	expect(resolve).toHaveBeenCalledWith(__dirname, `wiremock-3.3.1.jar`);
 	expect(instance['binPath']).toEqual('dummy');
 });
 
@@ -118,12 +117,12 @@ it('should assign args', () => {
 
 it('should throw error when trying to set port using the args', () => {
 	expect(() => new WiremockLauncher({ args: ['-port', '9999'] })).toThrowError(
-		'Cannot set port using args. Use options.port instead.'
+		'Cannot set port using args. Use options.port instead.',
 	);
 });
 
 it('should throw error when  to set root-dir using the args', () => {
 	expect(() => new WiremockLauncher({ args: ['-root-dir', 'dummy'] })).toThrowError(
-		'Cannot set root-dir using args. Use options.rootDir instead.'
+		'Cannot set root-dir using args. Use options.rootDir instead.',
 	);
 });

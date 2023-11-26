@@ -28,14 +28,7 @@ import { WiremockLauncher } from './launcher';
 import { WireMock } from './wiremock';
 
 beforeEach(() => {
-	defaultArgs = [
-		'-jar',
-		resolve(__dirname, 'wiremock-standalone-2.27.2.jar'),
-		'-port',
-		'8080',
-		'-root-dir',
-		'wiremock',
-	];
+	defaultArgs = ['-jar', resolve(__dirname, 'wiremock-3.3.1.jar'), '-port', '8080', '-root-dir', 'wiremock'];
 	spawn.mockReturnValue({
 		stdout: { pipe: mockStdoutPipe },
 		stderr: { pipe: mockStderrPipe },
@@ -108,13 +101,12 @@ it('should run wiremock without silent mode', async () => {
 });
 
 it('should run wiremock with custom mavenBaseUrl', async () => {
-	const url = 'maven-url/com/github/tomakehurst/wiremock-standalone/2.27.2/wiremock-standalone-2.27.2.jar';
-	const instance = new WiremockLauncher({ mavenBaseUrl: 'maven-url' });
+	const instance = new WiremockLauncher({ downloadUrl: 'example-url' });
 	existsSync.mockReturnValue(false);
 
 	await instance.onPrepare();
 
-	expect(WireMock.download).toHaveBeenCalledWith(url, defaultArgs[1]);
+	expect(WireMock.download).toHaveBeenCalledWith('example-url', defaultArgs[1]);
 	expect(spawn).toHaveBeenCalledTimes(1);
 	expect(spawn).toHaveBeenCalledWith('java', defaultArgs, { detached: true });
 });

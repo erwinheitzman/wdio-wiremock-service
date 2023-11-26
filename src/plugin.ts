@@ -13,7 +13,7 @@ export abstract class Plugin {
 
 	constructor(options: Options = {}, capabilities?: Capabilities, config?: WdioConfig) {
 		const args = options.args || [];
-		const version = options.version || '2.27.2';
+		const version = options.version || '3.3.1';
 		const rootDir = options.rootDir || 'wiremock';
 
 		if (!existsSync(rootDir)) {
@@ -30,12 +30,10 @@ export abstract class Plugin {
 
 		this.silent = !!options.silent;
 		this.watchMode = !!config?.watch;
-		this.binPath = resolve(__dirname, `wiremock-standalone-${version}.jar`);
+		this.binPath = options.binPath ? resolve(options.binPath) : resolve(__dirname, `wiremock-${version}.jar`);
 		this.port = options.port || 8080;
 		this.skipWiremockInstall = !!options.skipWiremockInstall;
 		this.args = ['-jar', this.binPath, '-port', this.port.toString(), '-root-dir', rootDir].concat(args);
-		this.url =
-			`${options.mavenBaseUrl || 'https://repo1.maven.org/maven2'}` +
-			`/com/github/tomakehurst/wiremock-standalone/${version}/wiremock-standalone-${version}.jar`;
+		this.url = options.downloadUrl || `https://github.com/wiremock/wiremock/archive/refs/tags/${version}.tar.gz`;
 	}
 }

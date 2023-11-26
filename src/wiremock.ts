@@ -4,7 +4,7 @@ import type { IncomingMessage } from 'http';
 
 export class WireMock {
 	static async download(from: string, to: string) {
-		this.logDownloadMessage(from);
+		process.stdout.write(`Downloading WireMock from ${from}\n`);
 		const res = await this.httpRequest(from);
 		return this.writeData(res, to);
 	}
@@ -15,10 +15,6 @@ export class WireMock {
 			data.on('end', () => resolve());
 			data.on('error', () => reject(new Error('Could not write to ' + to)));
 		});
-	}
-
-	private static logDownloadMessage(url: string) {
-		process.stdout.write(`Downloading WireMock standalone from Maven Central...\n  ${url}\n`);
 	}
 
 	private static httpRequest(url: string): Promise<IncomingMessage> {
