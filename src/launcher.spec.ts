@@ -113,7 +113,7 @@ it('should run wiremock with custom mavenBaseUrl', async () => {
 
 it('should throw when WireMock.download rejects', async () => {
 	const rejectedError = 'rejected!';
-	const errorMessage = new Error(`Downloading WireMock jar from Maven Central failed: ${rejectedError}\n`);
+	const errorMessage = new Error(`Downloading WireMock failed: ${rejectedError}\n`);
 	const instance = new WiremockLauncher();
 
 	existsSync.mockReturnValue(false);

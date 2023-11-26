@@ -34,6 +34,8 @@ export abstract class Plugin {
 		this.port = options.port || 8080;
 		this.skipWiremockInstall = !!options.skipWiremockInstall;
 		this.args = ['-jar', this.binPath, '-port', this.port.toString(), '-root-dir', rootDir].concat(args);
-		this.url = options.downloadUrl || `https://github.com/wiremock/wiremock/archive/refs/tags/${version}.tar.gz`;
+		this.url =
+			options.downloadUrl ||
+			`https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/${version}/wiremock-standalone-${version}.jar`;
 	}
 }

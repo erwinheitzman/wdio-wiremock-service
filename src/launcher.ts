@@ -17,7 +17,7 @@ export class WiremockLauncher extends Plugin {
 			try {
 				await WireMock.download(this.url, this.binPath);
 			} catch (error) {
-				throw new Error(`Downloading WireMock jar from Maven Central failed: ${error}\n`);
+				throw new Error(`Downloading WireMock failed: ${error}\n`);
 			}
 		}
 
