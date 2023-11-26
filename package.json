@@ -1,6 +1,6 @@
 {
 	"name": "wdio-wiremock-service",
-	"version": "7.0.1",
+	"version": "7.0.2",
 	"description": "A WebdriverIO service to start &amp; stop WireMock Standalone",
 	"author": "Erwin Heitzman <erwin.heitzman@gmail.com>",
 	"homepage": "https://github.com/erwinheitzman/wdio-wiremock-service#readme",
